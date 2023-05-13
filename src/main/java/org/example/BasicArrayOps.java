@@ -2,6 +2,10 @@ package org.example;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /*
 Questions:
@@ -36,7 +40,7 @@ no instance(s) of type variable(s) T exists so that int[] conforms to T[]
 
 public class BasicArrayOps {
     public static void main(String[] args) {
-        int[] intArr ={1,0,4}; // Array is not resizable, but you can change the value of an array at an index
+        int[] intArr = {1, 0, 4}; // Array is not resizable, but you can change the value of an array at an index
         System.out.println(intArr[0]);
 
         // natural order sort of an array
@@ -47,7 +51,7 @@ public class BasicArrayOps {
         // we need to provide
         // requires a generic type array object, not int type array object
         //Arrays.sort(intArr, Collections.reverseOrder()); // this will throw an compile time error
-                                                        // reason: no instance(s) of type variable(s) T exist so that int[] conforms to T[]
+        // reason: no instance(s) of type variable(s) T exist so that int[] conforms to T[]
         // Solution
         // Convert an int array into Integer array
         // as Integer array will be required to sort the array in reverse order
@@ -62,13 +66,79 @@ public class BasicArrayOps {
 
         // Way-02: More efficient if the array size if very large
         // similar in performance to way-01 for small array size
-        int[] intArr2= {0,-1,100,4,5};
+        int[] intArr2 = {0, -1, 100, 4, 5};
         System.out.println(Arrays.toString(intArr2));
         Integer[] T_intArr2 = Arrays.stream(intArr2)
                 .mapToObj(Integer::valueOf)
                 .toArray(Integer[]::new);
-        Arrays.sort(T_intArr2,Collections.reverseOrder());
+        Arrays.sort(T_intArr2, Collections.reverseOrder());
         System.out.println(Arrays.toString(T_intArr2));
+
+        // String Array
+        String[] strArray = {"A", "C", "BB", "B","c"};
+        System.out.println(Arrays.toString(strArray));
+
+        // Sort the String array into alphabetic order
+        Arrays.sort(strArray);
+        System.out.println(Arrays.toString(strArray));
+
+        // Sort the array into descending order of their length
+        // Lambda expression requires an explicit target type
+        // Comparator.comparing(Function::Mandatory_Param, Other_Comparator:: Optional)
+        // Comparator.comparing(String::length) represents Comparator.comparing(String::length, null) --> natural order sorting
+        Comparator<Integer> lambda_lengthComparator = (s1, s2) -> Integer.compare(s2, s1);
+        Comparator<String> strLengthComparator =
+                Comparator.comparing(String::length, lambda_lengthComparator);
+        Arrays.sort(strArray, strLengthComparator);
+        System.out.println(Arrays.toString(strArray));
+
+        // To simply reverse an Array
+
+
+        // Sort by first Character
+        Function<String, Character> function_firstLetter = (String s) -> s.charAt(0);
+        Comparator<String> strFirstLetterComparator = Comparator.comparing(function_firstLetter);
+        strFirstLetterComparator = strFirstLetterComparator.reversed(); // lets reverse it, so that
+        Arrays.sort(strArray, strFirstLetterComparator);
+        System.out.printf("Sort by first letter (reverse): %s\n", Arrays.toString(strArray));
+
+
+        // Declaring the initial size of an array
+        int[] sizedArray = new int[10];
+        sizedArray[0]=10;
+        sizedArray[2]=20;
+        System.out.println(Arrays.toString(sizedArray));
+
+        // Copy the portion of an array to another array
+        var copiedSizedArray = new int[3];
+        System.arraycopy(sizedArray,0,copiedSizedArray,0,3);
+        System.out.println(Arrays.toString(copiedSizedArray));
+
+        // another way of copying an array
+        int[] destinationArray = Arrays.copyOf(sizedArray,sizedArray.length);
+        System.out.println(Arrays.toString(destinationArray));
+
+        // Array to List
+        String[] sourceArray = {"Jahid","Arafat", "Hello"};
+        List<String> sourceList = Arrays.asList(sourceArray);
+
+        // Function to convert the 2nd letter of each string to Uppercase and rest as lowercase
+        Function<String, String> toMixedCase = s -> {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < s.length(); i++) {
+                if (i == 1) {
+                    sb.append(Character.toUpperCase(s.charAt(i)));
+                } else {
+                    sb.append(Character.toLowerCase(s.charAt(i)));
+                }
+            }
+            return sb.toString();
+        };
+
+        var lowerCaseList=sourceList.stream()
+                .map(toMixedCase)
+                .toList();
+        System.out.println(lowerCaseList);
 
 
     }
